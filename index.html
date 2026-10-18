@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>未能宣之于口的</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{width:100%;min-height:100%}
+  body{
+    font-family:"Songti SC","Noto Serif CJK SC","Source Han Serif SC","SimSun",serif;
+    background:#fff;
+    background-image:linear-gradient(160deg,#fdfcff 0%,#f7f3ff 40%,#faf8ff 70%,#fdfcff 100%);
+    color:#3d3355;line-height:1.8;overflow-x:hidden;
+  }
+  .page{display:none;max-width:520px;margin:0 auto;padding:32px 22px 80px;min-height:100vh;position:relative}
+  .page.active{display:block}
+  .watermark{position:fixed;bottom:14px;left:0;right:0;text-align:center;font-size:11px;color:#c9c2d8;letter-spacing:1px;pointer-events:none;z-index:5}
+  .px{position:absolute;pointer-events:none;opacity:.5}
+  .px.sq{width:5px;height:5px;background:#c9b8ea}
+  .px.star{width:7px;height:7px;background:#b9a4e0;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+  .px.dot{width:4px;height:4px;background:#d8cdf0}
+
+  #page-landing{padding-top:16vh;text-align:center}
+  .landing-title{font-size:34px;letter-spacing:6px;color:#5a4a7a;font-weight:400;line-height:1.5;margin-bottom:28px}
+  .landing-title .line{display:block}
+  .landing-desc{font-size:15px;color:#8d7fa8;line-height:2.1;margin-bottom:44px;letter-spacing:1px}
+  .landing-divider{width:60px;height:1px;background:#d8cdf0;margin:0 auto 40px;position:relative}
+  .landing-divider::before,.landing-divider::after{content:"";position:absolute;top:-2px;width:5px;height:5px;background:#b9a4e0}
+  .landing-divider::before{left:-10px}.landing-divider::after{right:-10px}
+
+  .btn{display:inline-block;font-family:inherit;font-size:16px;letter-spacing:3px;padding:14px 38px;background:#fff;color:#6b5a92;border:1.5px solid #b9a4e0;border-radius:2px;cursor:pointer;transition:transform .08s,background .15s,color .15s;box-shadow:2px 2px 0 #e6def5;user-select:none}
+  .btn:active{transform:translate(2px,2px);box-shadow:0 0 0 #e6def5}
+  .btn.solid{background:#8d76b8;color:#fff;border-color:#8d76b8;box-shadow:2px 2px 0 #d0c3ea}
+  .btn.solid:active{box-shadow:0 0 0 #d0c3ea}
+  .btn.small{font-size:13px;padding:10px 22px;letter-spacing:2px;box-shadow:1px 1px 0 #e6def5}
+  .btn.ghost{box-shadow:none;border-color:#d8cdf0;color:#9a8cb5}
+
+  /* 名字输入页 */
+  #page-name{padding-top:16vh;text-align:center}
+  .name-title{font-size:20px;color:#4d3f6b;line-height:2;margin-bottom:12px;letter-spacing:2px}
+  .name-sub{font-size:13px;color:#a99bc2;margin-bottom:36px;letter-spacing:1px}
+  .name-input{width:100%;max-width:300px;margin:0 auto 36px;display:block;text-align:center;font-family:inherit;font-size:18px;letter-spacing:3px;padding:14px 16px;background:#fff;border:1.5px solid #d8cdf0;border-radius:2px;color:#4d3f6b;outline:none;box-shadow:1.5px 1.5px 0 #f0eaf9}
+  .name-input::placeholder{color:#c9c2d8;letter-spacing:2px}
+
+  .q-header{text-align:center;margin-bottom:36px}
+  .q-brand{font-size:12px;color:#b3a6cc;letter-spacing:3px;margin-bottom:22px}
+  .q-progress{display:flex;justify-content:center;gap:8px;margin-bottom:44px}
+  .q-progress i{width:7px;height:7px;border-radius:50%;background:#e6def5;display:block;transition:background .3s}
+  .q-progress i.on{background:#8d76b8}
+  .q-title{font-size:19px;color:#4d3f6b;line-height:1.9;margin-bottom:38px;letter-spacing:1px;min-height:70px}
+  .q-options{display:flex;flex-direction:column;gap:14px;margin-bottom:40px}
+  .q-opt{font-family:inherit;font-size:15px;line-height:1.75;text-align:left;padding:16px 18px;background:#fff;color:#5a4a7a;border:1.5px solid #d8cdf0;border-radius:2px;cursor:pointer;transition:all .18s;letter-spacing:.5px;box-shadow:1.5px 1.5px 0 #f0eaf9}
+  .q-opt:active{transform:translate(1.5px,1.5px);box-shadow:0 0 0 #f0eaf9}
+  .q-opt.selected{background:#8d76b8;color:#fff;border-color:#8d76b8;box-shadow:1.5px 1.5px 0 #d0c3ea}
+  .q-footer{display:flex;align-items:center;justify-content:space-between;min-height:40px}
+  .q-back{font-size:13px;color:#a99bc2;cursor:pointer;letter-spacing:1px;padding:8px 0;background:none;border:none;font-family:inherit}
+  .q-back.hide{visibility:hidden}
+
+  #page-draw{text-align:center;padding-top:14vh}
+  .deck{position:relative;height:380px;margin:0 auto 40px;width:300px}
+  .card-back{position:absolute;width:140px;height:238px;left:50%;top:50%;border:1.5px solid #b9a4e0;border-radius:3px;background:#fff;background-image:repeating-linear-gradient(45deg,transparent,transparent 6px,#f3eefb 6px,#f3eefb 7px),repeating-linear-gradient(-45deg,transparent,transparent 6px,#f3eefb 6px,#f3eefb 7px);box-shadow:3px 3px 0 #ece4f8;cursor:pointer;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .4s}
+  .card-back::after{content:"";position:absolute;inset:12px;border:1px solid #e0d5f2;border-radius:2px}
+  .card-back::before{content:"";position:absolute;left:50%;top:50%;width:24px;height:24px;transform:translate(-50%,-50%);background:#c9b8ea;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);opacity:.55}
+  .card-back[data-i="0"]{transform:translate(-50%,-50%) rotate(-14deg) translateX(-62px)}
+  .card-back[data-i="1"]{transform:translate(-50%,-50%) translateY(-8px);z-index:2}
+  .card-back[data-i="2"]{transform:translate(-50%,-50%) rotate(14deg) translateX(62px)}
+  .card-back:active{filter:brightness(.97)}
+  .card-back.gone{opacity:0;pointer-events:none;transform:translate(-50%,-50%) scale(.7)}
+  .card-back.chosen{z-index:10;transform:translate(-50%,-50%) scale(1.15);transition:transform .45s cubic-bezier(.34,1.56,.64,1),opacity .3s}
+  .card-back.flip{animation:flipCard .9s cubic-bezier(.4,0,.2,1) forwards}
+  @keyframes flipCard{0%{transform:translate(-50%,-50%) scale(1.15) rotateY(0)}100%{transform:translate(-50%,-50%) scale(1.15) rotateY(180deg)}}
+  .card-back.flip::before{opacity:0}
+
+  #page-result{padding-top:26px}
+  .tarot{position:relative;width:100%;max-width:340px;margin:0 auto 30px;aspect-ratio:1/1.7;background:#fff;border:1.5px solid #c9b8ea;border-radius:3px;box-shadow:4px 4px 0 #ece4f8;padding:24px 20px;display:flex;flex-direction:column;overflow:hidden}
+  .tarot-corner{position:absolute;width:6px;height:6px;background:#c9b8ea;opacity:.55}
+  .tarot-corner.tl{top:10px;left:10px}.tarot-corner.tr{top:10px;right:10px}
+  .tarot-corner.bl{bottom:10px;left:10px}.tarot-corner.br{bottom:10px;right:10px}
+  .tarot-symbol{position:absolute;font-size:13px;color:#c9b8ea;opacity:.7;line-height:1}
+  .tarot-symbol.s1{top:12px;left:50%;transform:translateX(-50%)}
+  .tarot-symbol.s2{bottom:12px;left:50%;transform:translateX(-50%)}
+  .tarot-head{text-align:center;padding:6px 0 14px;border-bottom:1px solid #e6def5}
+  .tarot-name{font-size:22px;letter-spacing:5px;color:#5a4a7a;margin-bottom:6px}
+  .tarot-rarity{font-size:11px;color:#b3a6cc;letter-spacing:3px}
+  .tarot-body{flex:1;overflow-y:auto;padding:16px 2px 14px;font-size:15px;line-height:2;color:#4d3f6b;text-align:left;letter-spacing:.6px}
+  .tarot-body::-webkit-scrollbar{width:3px}
+  .tarot-body::-webkit-scrollbar-thumb{background:#e0d5f2;border-radius:2px}
+  .tarot-reasons{border-top:1px solid #e6def5;padding-top:14px;flex-shrink:0}
+  .tarot-reasons-title{font-size:11px;color:#b3a6cc;letter-spacing:2px;margin-bottom:10px}
+  .reason-line{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:#8d7fa8;line-height:1.9;margin-bottom:5px}
+  .reason-line .dot{width:4px;height:4px;background:#c9b8ea;border-radius:50%;margin-top:9px;flex-shrink:0}
+  .reason-line.top{color:#4d3f6b;font-weight:600}
+  .reason-line.top .dot{background:#8d76b8}
+
+  .module{max-width:340px;margin:0 auto 24px;background:rgba(255,255,255,.72);border:1px solid #e6def5;border-radius:2px;padding:22px 20px}
+  .module-title{font-size:14px;color:#6b5a92;letter-spacing:3px;margin-bottom:18px;text-align:center;position:relative;padding-bottom:12px}
+  .module-title::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:24px;height:1px;background:#d8cdf0}
+  .module-sep{text-align:center;font-size:10px;color:#d8cdf0;letter-spacing:6px;margin:6px 0 24px}
+
+  .letter-box{width:100%;min-height:120px;padding:14px;font-family:inherit;font-size:15px;line-height:2;color:#4d3f6b;background:#fff;border:1.5px solid #e0d5f2;border-radius:2px;resize:none;outline:none;letter-spacing:.5px}
+  .letter-box::placeholder{color:#c9c2d8}
+  .letter-meta{display:flex;justify-content:flex-end;font-size:11px;color:#b3a6cc;margin-top:8px;letter-spacing:1px}
+  .letter-meta.over{color:#d98a9a}
+  .module-actions{text-align:center;margin-top:18px}
+
+  .action-line{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#6b5a7a;line-height:2;margin-bottom:10px}
+  .action-line .dot{width:5px;height:5px;background:#c9b8ea;margin-top:10px;flex-shrink:0}
+
+  /* 幸运模块 */
+  .lucky-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .lucky-item{background:#faf8ff;border:1px solid #ece4f8;border-radius:2px;padding:12px 10px;text-align:center}
+  .lucky-label{font-size:11px;color:#b3a6cc;letter-spacing:2px;margin-bottom:6px}
+  .lucky-value{font-size:14px;color:#5a4a7a;letter-spacing:1px}
+  .avoid-line{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:#8d7fa8;line-height:2}
+  .avoid-line .dot{width:5px;height:5px;background:#c9b8ea;margin-top:10px;flex-shrink:0}
+
+  .result-actions{max-width:340px;margin:8px auto 0;display:flex;gap:12px}
+  .result-actions .btn{flex:1;padding:13px 0;font-size:14px;letter-spacing:2px}
+
+  #page-letter{padding-top:40px}
+  .letter-paper{max-width:360px;margin:0 auto;background:#fff;border:1px solid #e6def5;border-radius:2px;padding:32px 26px;box-shadow:4px 4px 0 #f3eefb;position:relative}
+  .letter-paper::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#e6def5,#c9b8ea,#e6def5)}
+  .letter-content{font-size:15px;line-height:2.2;color:#4d3f6b;white-space:pre-wrap;word-break:break-word;min-height:80px;letter-spacing:.6px}
+  .letter-divider{height:1px;background:#f0eaf9;margin:24px 0 18px}
+  .letter-card-mini{display:flex;gap:12px;align-items:center}
+  .letter-card-mini .mini-tarot{width:44px;height:74px;border:1px solid #d8cdf0;border-radius:2px;background:#faf8ff;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:#b3a6cc;letter-spacing:1px;text-align:center;padding:4px;line-height:1.4}
+  .letter-card-mini .mini-info{font-size:12px;color:#8d7fa8;line-height:1.9}
+  .letter-date{text-align:right;font-size:12px;color:#b3a6cc;margin-top:16px;letter-spacing:1px}
+  .letter-actions{max-width:360px;margin:24px auto 0;display:flex;gap:12px}
+  .letter-actions .btn{flex:1;padding:13px 0;font-size:14px;letter-spacing:2px}
+
+  .modal-mask{position:fixed;inset:0;background:rgba(60,48,86,.32);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
+  .modal-mask.show{display:flex}
+  .modal{background:#fff;border:1.5px solid #d8cdf0;border-radius:3px;padding:28px 24px 22px;max-width:320px;width:100%;text-align:center;box-shadow:4px 4px 0 #e6def5}
+  .modal-text{font-size:15px;color:#4d3f6b;line-height:2;margin-bottom:24px;letter-spacing:1px}
+  .modal-btns{display:flex;gap:12px}
+  .modal-btns .btn{flex:1;padding:11px 0;font-size:14px;letter-spacing:2px}
+</style>
+</head>
+<body>
+
+<!-- 落地页 -->
+<div class="page active" id="page-landing">
+  <span class="px star" style="top:12%;left:12%"></span>
+  <span class="px sq" style="top:20%;right:16%"></span>
+  <span class="px dot" style="top:34%;left:22%"></span>
+  <span class="px star" style="top:58%;right:12%"></span>
+  <span class="px sq" style="bottom:24%;left:14%"></span>
+  <span class="px dot" style="bottom:16%;right:20%"></span>
+  <h1 class="landing-title"><span class="line">未能</span><span class="line">宣之于口的</span></h1>
+  <div class="landing-divider"></div>
+  <p class="landing-desc">或许，你也想听听<br>他没能说出口的那些话吗……</p>
+  <button class="btn solid" onclick="showPage('name')">抽取，他想要说的</button>
+</div>
+
+<!-- 名字输入页 -->
+<div class="page" id="page-name">
+  <span class="px star" style="top:10%;right:12%"></span>
+  <span class="px dot" style="bottom:22%;left:14%"></span>
+  <div style="text-align:center">
+    <div class="name-title">先写下他的名字</div>
+    <div class="name-sub">他会在后面的回信里出现</div>
+    <input class="name-input" id="nameInput" maxlength="12" placeholder="他的名字">
+    <button class="btn solid" onclick="confirmName()">确认</button>
+  </div>
+</div>
+
+<!-- 答题页 -->
+<div class="page" id="page-quiz">
+  <span class="px star" style="top:8%;right:10%"></span>
+  <span class="px sq" style="top:26%;left:8%"></span>
+  <span class="px dot" style="bottom:20%;right:14%"></span>
+  <div class="q-header">
+    <div class="q-brand">未能宣之于口的</div>
+    <div class="q-progress" id="qProgress"></div>
+  </div>
+  <div class="q-title" id="qTitle"></div>
+  <div class="q-options" id="qOptions"></div>
+  <div class="q-footer">
+    <button class="q-back hide" id="qBack" onclick="prevQuestion()">← 上一题</button>
+    <span></span>
+  </div>
+</div>
+
+<!-- 牌堆页 -->
+<div class="page" id="page-draw">
+  <span class="px star" style="top:10%;left:12%"></span>
+  <span class="px dot" style="top:30%;right:10%"></span>
+  <span class="px sq" style="bottom:22%;left:16%"></span>
+  <div class="deck" id="deck">
+    <div class="card-back" data-i="0" onclick="pickCard(0)"></div>
+    <div class="card-back" data-i="1" onclick="pickCard(1)"></div>
+    <div class="card-back" data-i="2" onclick="pickCard(2)"></div>
+  </div>
+</div>
+
+<!-- 结果页 -->
+<div class="page" id="page-result">
+  <span class="px star" style="top:4%;right:8%"></span>
+  <span class="px dot" style="top:18%;left:6%"></span>
+  <div class="tarot" id="tarot">
+    <span class="tarot-corner tl"></span><span class="tarot-corner tr"></span>
+    <span class="tarot-corner bl"></span><span class="tarot-corner br"></span>
+    <span class="tarot-symbol s1" id="tarotSymTop">✦</span>
+    <span class="tarot-symbol s2" id="tarotSymBot">✧</span>
+    <div class="tarot-head">
+      <div class="tarot-name" id="tarotName"></div>
+      <div class="tarot-rarity" id="tarotRarity"></div>
+    </div>
+    <div class="tarot-body" id="tarotBody"></div>
+    <div class="tarot-reasons">
+      <div class="tarot-reasons-title">他没说出口的可能</div>
+      <div id="tarotReasons"></div>
+    </div>
+  </div>
+
+  <!-- 幸运模块 -->
+  <div class="module">
+    <div class="module-title">今日与他的小运气</div>
+    <div class="lucky-grid">
+      <div class="lucky-item"><div class="lucky-label">幸运色</div><div class="lucky-value" id="luckyColor"></div></div>
+      <div class="lucky-item"><div class="lucky-label">幸运数字</div><div class="lucky-value" id="luckyNumber"></div></div>
+      <div class="lucky-item"><div class="lucky-label">幸运食物</div><div class="lucky-value" id="luckyFood"></div></div>
+      <div class="lucky-item"><div class="lucky-label">幸运配饰</div><div class="lucky-value" id="luckyAcc"></div></div>
+    </div>
+    <div style="margin-top:18px;border-top:1px solid #ece4f8;padding-top:16px">
+      <div class="avoid-line"><span class="dot"></span><span id="avoidText"></span></div>
+    </div>
+  </div>
+
+  <div class="module">
+    <div class="module-title" id="letterModuleTitle">你想给他的回信</div>
+    <textarea class="letter-box" id="letterInput" maxlength="200" placeholder="你想回他什么？" oninput="updateLetterCount()"></textarea>
+    <div class="letter-meta" id="letterMeta">0/200</div>
+    <div class="module-actions">
+      <button class="btn small solid" onclick="genLetter()">生成回信</button>
+    </div>
+  </div>
+
+  <div class="module-sep">✦ ✦ ✦</div>
+
+  <div class="module">
+    <div class="module-title">今天可以做的事</div>
+    <div id="actionsBox"></div>
+  </div>
+
+  <div class="result-actions">
+    <button class="btn small" onclick="saveTarot()">保存图片</button>
+    <button class="btn small ghost" onclick="askRestart()">重新抽一次</button>
+  </div>
+</div>
+
+<!-- 回信页 -->
+<div class="page" id="page-letter">
+  <span class="px star" style="top:6%;left:10%"></span>
+  <span class="px dot" style="bottom:18%;right:12%"></span>
+  <div class="letter-paper" id="letterPaper">
+    <div class="letter-content" id="letterContent"></div>
+    <div class="letter-divider"></div>
+    <div class="letter-card-mini">
+      <div class="mini-tarot" id="miniTarot"></div>
+      <div class="mini-info" id="miniInfo"></div>
+    </div>
+    <div class="letter-date" id="letterDate"></div>
+  </div>
+  <div class="letter-actions">
+    <button class="btn small" onclick="saveLetter()">保存为图片</button>
+    <button class="btn small ghost" onclick="backToResult()">返回结果页</button>
+  </div>
+</div>
+
+<div class="watermark">一粒沙尘制作</div>
+
+<div class="modal-mask" id="modalMask">
+  <div class="modal">
+    <div class="modal-text" id="modalText"></div>
+    <div class="modal-btns" id="modalBtns"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   改文案从这里开始
+   ============================================================ */
+
+const QUESTIONS = [
+  { q:"你最近一次“点开他的对话框，又没有发送消息”更像下面概括的哪种情况？",
+    opts:["看到一条和他有关的东西，想转给他，又退出了","睡前习惯性点开，看了一眼就关掉","有事想问他，打了一半，觉得没必要"] },
+  { q:"你心里的他，只展现在你面前的一面，更像是？",
+    opts:["嘴不饶人，但会偷偷记住你说过的话","表面看上去能处理好一切，实则也希望得到你的支持","对别人都有距离，唯独对你例外"] },
+  { q:"你反复回味的那个瞬间，更像哪一种？",
+    opts:["嘴硬心软，嘴上凶却在背地里处理好问题","他难得示弱，在你面前卸下防备","他对你说有关“以后”的话"] },
+  { q:"你手机里关于他的东西，会翻来覆去看的是哪一种？",
+    opts:["聊天记录里某句话","他发过的某张图、某条动态","你自己写的、没发给他的备忘录或草稿"] },
+  { q:"你们之间最常出现的沉默，更像哪一种？",
+    opts:["他先结束话题，你盯着最后一句对话看了很久","你等他先开口，他也等你","两个人都没说，但都知道对方在"] },
+  { q:"你更怕哪一种“没说出口”最后变成遗憾？",
+    opts:["他想说，但以为你不想听","你想听，但装作并不在意","两个人都等对方先开口"] }
+];
+
+/* 稀有度显示映射 */
+const RARITY_LABEL = { "常规款":"日常", "稀有款":"特别思念", "隐藏款":"仅你可见" };
+
+const CARDS = [
+  { id:"D1", name:"我与月亮", rarity:"常规款", group:"D",
+    text:"以为有些话是不敢在白天和你说，却没想到，当月亮挂在夜空中时，也还是说不出口。好担心，那些反复表达情感的话会吓到你，好希望，能亲口听见你说想我……",
+    reasons:["怕吓到你","怕太主动","怕你不想听"],
+    actions:["今晚听一首你俩都听过的歌。","把桌面清一小块出来，放一样和他有关的东西。","拿出纸笔，画一个简单的你想象中的月亮。"], sym:["☾","✦"] },
+  { id:"D2", name:"思念海", rarity:"常规款", group:"D",
+    text:"我总是会在深夜的时候想你，想你有没有睡着，想你在做着一个怎样的梦？想如果你的梦里能够有我，就太好了……",
+    reasons:["怕太主动","怕没资格","怕你不想听"],
+    actions:["睡前把手机放远一点，留十分钟什么都不做。","写下你今天想到他的那个瞬间。","听一首没有歌词的歌，听完就睡。"], sym:["✦","☾"] },
+  { id:"D3", name:"情绪在夜晚翻船", rarity:"稀有款", group:"D",
+    text:"不知道，总感觉我们之间的关系似乎比从前淡了一些，我的意思是说，你似乎有一些事不愿意告诉我了。或许是哪里我做的不够好，或许是前段时间我让你觉得心烦了。可是我好希望，你可以把所有的开心不开心都与我分享，我想要承接你的所有情绪，想要承接完整的你……",
+    reasons:["怕破坏关系","怕吓到你","怕你不想听"],
+    actions:["找一个本子，写下你最近一次觉得“他不一样”的时刻。","给自己泡一杯热饮，慢慢喝完。","给家里的植物或固定物品换个新位置。"], sym:["☾","✧"] },
+  { id:"Z1", name:"嘴巴会说谎", rarity:"常规款", group:"Z",
+    text:"你为什么要把事情憋在心里，为什么不第一时间和我诉说你的情绪？如果你再这样一个人偷偷消化，我真的会非常生气……",
+    reasons:["怕你不想听","怕太主动","怕破坏关系"],
+    actions:["找一张纸，写下他最近一次嘴硬时做的事。","听一首你生气时会听的歌。","给自己一个大大的拥抱。"], sym:["✧","✦"] },
+  { id:"Z2", name:"假装顺路", rarity:"常规款", group:"Z",
+    text:"就是顺路啊，我没有绕远路的习惯，跟你在一起怎么走，走到哪儿都是顺的。好想牵手啊，偷偷勾一下手指应该没问题吧……",
+    reasons:["怕太主动","怕没资格","怕破坏关系"],
+    actions:["今天走一段你平时不会走的路。","把手机里某张你舍不得删的图，移到一个单独的相册。","画一条路，随便画，不用画终点。"], sym:["✦","☾"] },
+  { id:"Z3", name:"口是心非", rarity:"稀有款", group:"Z",
+    text:"好讨厌，刚才又有人和你说话，我又不能一直去打断，那样显得我很奇怪。可我只想让你跟我说话，无论什么，笑着还是哭着，偶尔任性一点也没关系，但能不能只和我说。为什么你讲话的时候眼睛这么漂亮，一眨一眨的，这样盯着别人，万一被别人偷偷喜欢了怎么办……",
+    reasons:["怕没资格","怕太主动","怕破坏关系"],
+    actions:["为自己写一首和“在意”有关的三行小诗。","把最近一次他吃醋的场景写下来。","听一首你觉得像“占有欲”的歌。"], sym:["☾","✧"] },
+  { id:"C1", name:"醋味浓郁", rarity:"常规款", group:"C",
+    text:"这个一直围在你身边的人是谁？你这个笨蛋完全不知道无事献殷勤，非奸即盗的道理吗？真应该好好教教，能不能不要再一直和他搭话了，完全不知道自己多吸引人……",
+    reasons:["怕没资格","怕太主动","怕破坏关系"],
+    actions:["看一部有关暗恋的电影。","听一首有点凶的歌，把情绪放进去。","为自己温和地涂抹一些护肤品。"], sym:["✦","☾"] },
+  { id:"W1", name:"挽留失语", rarity:"常规款", group:"W",
+    text:"感觉你没有那么经常的提起我了，但没关系，这是你成长的第一步。可如果能的话，还是好想和你说一句，别走。希望我们永远有无法说完的话……",
+    reasons:["怕你不想听","怕破坏关系","怕太主动"],
+    actions:["在一张纸上写下“我想你”，后折起来收好。","听一首有“留下”两个字的歌。","整理一下你最近删掉的东西，不恢复，只是看看。"], sym:["☾","✦"] },
+  { id:"W2", name:"我的谎言", rarity:"常规款", group:"W",
+    text:"骗你的，说什么随便你走多远，随便你要不要留下都是骗你的。你以为是你离不开我，可实际上我早就离不开你了……",
+    reasons:["怕太主动","怕你不想听","怕破坏关系"],
+    actions:["尝试为自己做一道黏糊糊的美食。","听一首你曾经一段时间单曲循环过的歌。","读一本自己感兴趣的书，阅读困了就睡觉。"], sym:["✧","☾"] },
+  { id:"W3", name:"最后一支红玫", rarity:"稀有款", group:"W",
+    text:"能不能不要走？生气也不要走，让我再哄哄你，给我一个机会。你想知道的，所有问题的答案都是肯定的，我现在只想把你紧紧的拥入怀，哪怕一刻也不要分离。我想要我们有很多个明天，有没有尽头的以后，永远永远，都要和你在一起，只有你……",
+    reasons:["怕破坏关系","怕你不想听","怕吓到你"],
+    actions:["画一支花，一支自己喜欢的花。","点一道自己之前没吃过的菜。","喷一点香水，或者在房间里点一只香薰。"], sym:["✦","✧"] },
+  { id:"S1", name:"藏匿于心", rarity:"常规款", group:"S",
+    text:"今天有些累，要不要和你说呢？你看上去也好辛苦，烦心事叠在一起的话，会不舒服吧，还是先不要说好了……",
+    reasons:["怕你不想听","怕太主动","怕没资格"],
+    actions:["给自己写一个简短的今日总结。","今天早一点关灯。","把那件一直想说的事，写三行，写完就停。"], sym:["☾","✦"] },
+  { id:"S2", name:"卸下伪装", rarity:"常规款", group:"S",
+    text:"在别人面前我怎么样都没关系，可是好希望你能问问我怎么了，不是说好的，我们之间所有的情绪都要与彼此分享吗……",
+    reasons:["怕没资格","怕你不想听","怕破坏关系"],
+    actions:["随便找一个人问一句“你最近怎么样”。","把桌面整理一下，只留三样东西。","听一首你难过时不会跳过的歌。"], sym:["✦","☾"] },
+  { id:"S3", name:"脆弱刹那", rarity:"稀有款", group:"S",
+    text:"我好像没有你想象中的那么好，我也会有犯错的时候，想把有关自己的所有事情都告诉你，但又贪心的只想和你分享快乐。该怎么办呢？两者之间的平衡，我好像没办法轻易抓住，如果你能告诉我答案就好了，想和你坐下来慢慢聊天，说一些只有我们彼此知道的糟糕的秘密……",
+    reasons:["怕吓到你","怕你不想听","怕破坏关系"],
+    actions:["写下一件你从来没跟他说过的小事。","允许自己买下一个最近比较喜欢的小物件。","听一首像深夜聊天的歌。"], sym:["✧","☾"] },
+  { id:"Y1", name:"越界", rarity:"常规款", group:"Y",
+    text:"你最近睡得好晚，不知道是不是有什么心事，都不愿意和我分享了。要不要开口问呢，直接问为什么这么晚睡觉的话，会让你不高兴吧……",
+    reasons:["怕太主动","怕没资格","怕你不想听"],
+    actions:["今晚把手机调成静音。","写下你想问但没问的那句话。","画一扇半开的门。"], sym:["☾","✦"] },
+  { id:"Y2", name:"敏感瞬间", rarity:"常规款", group:"Y",
+    text:"你那个朋友似乎有些不对，也可能是我太敏感了，提醒的话会不会让你觉得奇怪，比如说觉得我在吃醋……",
+    reasons:["怕没资格","怕太主动","怕破坏关系"],
+    actions:["最近找机会看一次日出。","为自己庆祝一个微小的成就。","听一首让你冷静下来的歌。"], sym:["✦","✧"] },
+  { id:"Y3", name:"出格的爱", rarity:"稀有款", group:"Y",
+    text:"如果我说，想要管你一辈子呢？我不想离开你，我不能想象你不在我身边的未来。如果我说想让你待在我身边永远永远，你会不会觉得我越界？想见面，想要我的以后全都是你的身影，想让你牵着我的手，走到很远很远的，你想要去到的所有地方……",
+    reasons:["怕吓到你","怕破坏关系","怕你不想听"],
+    actions:["写三句你想要的以后，只写你自己的部分。","画一个小房子，可以稍微雕琢一下。","换一张不同风格的手机壁纸。"], sym:["☾","✧"] },
+  { id:"L1", name:"更近的路", rarity:"常规款", group:"L",
+    text:"哪天被你发现了，我家在相反的方向会不会被嘲笑呢，可就是想跟你一起走，看见你回家后，我走在回去的路上也是完全幸福的……",
+    reasons:["怕太主动","怕没资格","怕破坏关系"],
+    actions:["今天绕一段远路回家。","拍一张你路上看到的东西，不用发给谁。","画一条你每天走的路。"], sym:["✦","☾"] },
+  { id:"F1", name:"预设未来", rarity:"常规款", group:"F",
+    text:"如果说，我早就把你纳入以后的一部分了呢？你的那一部分会不会有我，我们未来的故事会一直重叠吗……",
+    reasons:["怕吓到你","怕破坏关系","怕太主动"],
+    actions:["写三句你想要的以后，只写你自己的部分。","把你想过的那个“以后”画成一个简单的小图。","听一首你觉得像“未来”的歌。"], sym:["✧","✦"] },
+  { id:"F2", name:"藏于心中", rarity:"常规款", group:"F",
+    text:"你以后想在我们的家里放什么样的摆件，布置成什么色调比较好呢？这样问会不会太明显，还是不要这么直接……",
+    reasons:["怕太主动","怕没资格","怕破坏关系"],
+    actions:["画一个你想放的小摆件。","把房间里某样东西换个位置。","听一首很轻的歌，什么都不想。"], sym:["☾","✦"] },
+  { id:"F3", name:"未提出的以后", rarity:"稀有款", group:"F",
+    text:"我想过有关我们的好多个未来，唯独没有想过没有你的。可我也想问问你的想法，我明白，你也需要独立处理自己的很多事情，我想让你永远依赖我，可是你总会长大，去到一个可能没有我的地方。但是我想说，只要你需要 ，我就会一直在，无论未来有多少个岔路口，你想见我，我就会在下一个路口出现……",
+    reasons:["怕破坏关系","怕你不想听","怕吓到你"],
+    actions:["找时间去大自然里逛逛。","画一个路口，不用画人。","给自己吃点喜欢的水果。"], sym:["✦","✧"] },
+  { id:"H1", name:"写满你的备忘录", rarity:"隐藏款", group:"H",
+    text:"其实不知道从什么时候开始，记录你就已经变成了我日常生活的一部分，我会记录你的笑，你的难过，有关你的所有情绪，甚至记录你说有趣，或者感兴趣的话题。我现在看见每样东西，第一反应不是要不要留给自己，而是你会不会喜欢，你会不会想要？和你呆在一起的时候，总觉得时间过得太快，一眨眼，就消失不见了，就像一场你我都抓不住的梦境，当梦醒来的时候，手掌心还留有你的余温，可是你却不见了。所以我要写下所有有关于你的事情，所有所有……",
+    reasons:["怕你不想听","怕太主动","怕吓到你"],
+    actions:["尝试从今天开始戒掉一个坏习惯。","把备忘录里关于他的那页，从头看一遍。","画一个你最近总想起的东西。"], sym:["☾","✦"] }
+];
+
+/* 抽卡权重 */
+const W_Q1 = {0:["L1","Z2","Z3","C1","Y1","Y2"],1:["D1","D2","D3","S1","S2","S3","W1","W2","W3"],2:["C1","Y1","Y2","Y3","F1","F2","F3"]};
+const W_Q2 = {0:["Z1","Z2","Z3","C1","L1","W2"],1:["S1","S2","S3","D1","D2","D3","W1","W3"],2:["Y1","Y2","Y3","F1","F2","F3","H1"]};
+const W_Q3 = {0:["Z1","Z2","Z3","C1","L1","W2"],1:["S1","S2","S3","D1","D2","D3","W1","W3"],2:["F1","F2","F3","Y3","H1"]};
+const W_Q4 = {0:["Z1","W1","W2","D1","S2"],1:["Z3","C1","L1","D2","Y2"],2:["F1","F2","S1","Y1","H1","D3"]};
+const W_Q5 = {0:["D1","D2","D3","W1","W2","W3","S1","S3"],1:["Z2","Z3","C1","L1","Y1","Y2"],2:["F1","F2","F3","Y3","H1"]};
+const W_Q6 = {0:["D1","W1","W3","S1","S3","Y1","Y3","F3","H1"],1:["D2","Z2","Z3","C1","W2","S2","Y2","L1","F2"],2:["D3","Z1","F1"]};
+const SOLO = ["C1","L1"];
+function hiddenOK(ans){ return ans[3]===2 && ans[1]===2 && ans[5]===0; }
+
+/* ============================================================
+   幸运文案池（与卡组轻微关联）
+   ============================================================ */
+const LUCKY_POOL = {
+  color: {
+    D:["雾紫","夜蓝","月白"], Z:["暗红","铁灰","暖橘"], C:["酸橙","酒红","琥珀"],
+    W:["玫红","暮紫","旧金"], S:["奶白","灰蓝","浅茶"], Y:["银灰","深紫","墨绿"],
+    L:["暖黄","浅棕","路灰"], F:["天青","薰衣草紫","米金"], H:["奶油白","淡紫","星灰"]
+  },
+  number: {
+    D:["2","7","11"], Z:["3","6","9"], C:["1","5","8"], W:["4","10","12"],
+    S:["2","6","13"], Y:["5","7","14"], L:["3","8","11"], F:["1","9","21"], H:["7","12","21"]
+  },
+  food: {
+    D:["热牛奶","小饼干","一碗粥"], Z:["辣的东西","冰可乐","炸物"],
+    C:["柠檬水","话梅","酸糖"], W:["红丝绒蛋糕","热红酒","巧克力"],
+    S:["热汤","白粥","蒸蛋"], Y:["薄荷糖","苏打水","清茶"],
+    L:["糖炒栗子","烤红薯","热豆浆"], F:["棉花糖","柚子茶","小蛋糕"],
+    H:["牛奶糖","蜂蜜水","一片吐司"]
+  },
+  acc: {
+    D:["月亮吊坠","银色耳钉","一条细链"], Z:["黑色皮绳","金属戒指","旧手表"],
+    C:["小锁项链","红色发绳","玻璃珠"], W:["一朵干花","红绳","珍珠耳夹"],
+    S:["毛绒挂件","素圈戒指","一条围巾"], Y:["细框眼镜","银手链","黑色发卡"],
+    L:["帆布包","运动手环","钥匙扣"], F:["星星耳钉","淡紫发带","小戒指"],
+    H:["便签本","一支旧笔","透明书签"]
+  }
+};
+const AVOID_POOL = {
+  D:["避免长时间陷入思念情绪","避免深夜反复翻聊天记录","避免在情绪低时做决定"],
+  Z:["避免把反话当成沟通","避免用生气掩饰在意","避免一个人憋着"],
+  C:["避免反复对比自己和他身边的人","避免在没确认前先否定自己","避免把吃醋变成攻击"],
+  W:["避免反复回看已经结束的对话","避免用挽留换来确定感","避免把挽留的话说成“随便”"],
+  S:["避免把疲惫都藏起来","避免只在深夜才允许自己脆弱","避免用“没事”结束所有对话"],
+  Y:["避免替对方做决定","避免把关心说成命令","避免反复检查对方的动态"],
+  L:["避免绕太远的路却不说","避免把偶遇当成命运","避免只做不说"],
+  F:["避免过早替两个人写结局","避免把未来当成承诺","避免用“以后”逃避现在"],
+  H:["避免记录到忘记自己","避免把喜欢变成任务","避免只写不读"]
+};
+
+/* ============================================================
+   状态
+   ============================================================ */
+const LS_KEY = "weixuan_state_v2";
+let state = {
+  page:"landing", name:"", answers:[null,null,null,null,null,null], currentQ:0,
+  resultCardId:null, lucky:null, letterDraft:"", letterGenerated:false, letterText:"", letterDate:""
+};
+function saveState(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(state)); }catch(e){} }
+function loadState(){
+  try{ const raw = localStorage.getItem(LS_KEY); if(!raw) return null; const s = JSON.parse(raw); return s && s.answers ? s : null; }catch(e){ return null; }
+}
+function clearState(){
+  try{ localStorage.removeItem(LS_KEY); }catch(e){}
+  state = { page:"landing", name:"", answers:[null,null,null,null,null,null], currentQ:0,
+            resultCardId:null, lucky:null, letterDraft:"", letterGenerated:false, letterText:"", letterDate:"" };
+}
+function getCard(id){ return CARDS.find(c=>c.id===id); }
+function showPage(name){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  const el = document.getElementById("page-"+name);
+  if(el) el.classList.add("active");
+  state.page = name;
+  window.scrollTo(0,0);
+  saveState();
+}
+
+/* 弹窗 */
+function showModal(text, buttons){
+  document.getElementById("modalText").textContent = text;
+  const box = document.getElementById("modalBtns"); box.innerHTML = "";
+  buttons.forEach(b=>{
+    const btn = document.createElement("button");
+    btn.className = "btn small" + (b.solid ? " solid" : " ghost");
+    btn.textContent = b.label;
+    btn.onclick = ()=>{ hideModal(); b.onClick && b.onClick(); };
+    box.appendChild(btn);
+  });
+  document.getElementById("modalMask").classList.add("show");
+}
+function hideModal(){ document.getElementById("modalMask").classList.remove("show"); }
+
+/* 名字页 */
+function confirmName(){
+  const v = document.getElementById("nameInput").value.trim();
+  if(!v){ showModal("先写下他的名字吧。", [{label:"好",solid:true}]); return; }
+  state.name = v;
+  state.answers = [null,null,null,null,null,null];
+  state.currentQ = 0;
+  state.resultCardId = null; state.lucky = null;
+  state.letterDraft = ""; state.letterGenerated = false; state.letterText = ""; state.letterDate = "";
+  saveState();
+  showPage("quiz");
+  renderQuestion();
+}
+
+/* 答题 */
+function renderQuestion(){
+  const qi = state.currentQ, q = QUESTIONS[qi];
+  const prog = document.getElementById("qProgress"); prog.innerHTML = "";
+  for(let i=0;i<QUESTIONS.length;i++){ const d=document.createElement("i"); if(i<=qi) d.classList.add("on"); prog.appendChild(d); }
+  document.getElementById("qTitle").textContent = q.q;
+  const optBox = document.getElementById("qOptions"); optBox.innerHTML = "";
+  q.opts.forEach((text,oi)=>{
+    const btn = document.createElement("button");
+    btn.className = "q-opt" + (state.answers[qi]===oi ? " selected" : "");
+    btn.textContent = text;
+    btn.onclick = ()=> selectOption(qi,oi);
+    optBox.appendChild(btn);
+  });
+  document.getElementById("qBack").classList.toggle("hide", qi===0);
+}
+function selectOption(qi,oi){
+  state.answers[qi] = oi; saveState();
+  document.querySelectorAll("#qOptions .q-opt").forEach((b,i)=> b.classList.toggle("selected", i===oi));
+  setTimeout(()=>{
+    if(qi < QUESTIONS.length-1){ state.currentQ = qi+1; saveState(); renderQuestion(); }
+    else { showPage("draw"); resetDeck(); }
+  }, 600);
+}
+function prevQuestion(){ if(state.currentQ>0){ state.currentQ--; saveState(); renderQuestion(); } }
+
+/* 牌堆 */
+function resetDeck(){ document.querySelectorAll(".card-back").forEach(c=> c.classList.remove("gone","chosen","flip")); }
+let drawLock = false;
+function pickCard(i){
+  if(drawLock) return; drawLock = true;
+  const backs = document.querySelectorAll(".card-back");
+  backs.forEach((b,idx)=>{ if(idx!==i) b.classList.add("gone"); });
+  const chosen = backs[i]; chosen.classList.add("chosen");
+  const card = drawResult(state.answers);
+  setTimeout(()=>{
+    chosen.classList.add("flip");
+    setTimeout(()=>{
+      state.resultCardId = card.id;
+      state.lucky = makeLucky(card.group);
+      saveState(); renderResult(); showPage("result"); drawLock = false;
+    }, 900);
+  }, 250);
+}
+
+/* 抽卡 */
+function drawResult(ans){
+  const scores = {}; CARDS.forEach(c=> scores[c.id]=1);
+  function add(map,qi,w){ const sel=ans[qi]; if(sel==null) return; (map[sel]||[]).forEach(id=>{ if(scores[id]!==undefined) scores[id]+=w; }); }
+  add(W_Q1,0,1); add(W_Q2,1,5); add(W_Q3,2,3); add(W_Q4,3,1); add(W_Q5,4,2); add(W_Q6,5,5);
+  SOLO.forEach(id=>{ if(scores[id]!==undefined) scores[id]*=2; });
+  let pool = CARDS.filter(c=> c.id!=="H1");
+  if(hiddenOK(ans) && Math.random()<0.12) return getCard("H1");
+  let total=0; pool.forEach(c=> total+=scores[c.id]);
+  let r = Math.random()*total;
+  for(const c of pool){ r-=scores[c.id]; if(r<=0) return c; }
+  return pool[pool.length-1];
+}
+
+/* 幸运 */
+function pickOne(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function makeLucky(group){
+  const g = LUCKY_POOL.color[group] ? group : "D";
+  return {
+    color: pickOne(LUCKY_POOL.color[g]),
+    number: pickOne(LUCKY_POOL.number[g]),
+    food: pickOne(LUCKY_POOL.food[g]),
+    acc: pickOne(LUCKY_POOL.acc[g]),
+    avoid: pickOne(AVOID_POOL[g])
+  };
+}
+
+/* 结果页 */
+const SYMBOL_SETS = [["☾","✦"],["✦","☾"],["✧","☾"],["☾","✧"],["✦","✧"],["✧","✦"]];
+function renderResult(){
+  const card = getCard(state.resultCardId); if(!card) return;
+  document.getElementById("tarotName").textContent = card.name;
+  document.getElementById("tarotRarity").textContent = RARITY_LABEL[card.rarity] || card.rarity;
+  document.getElementById("tarotBody").textContent = card.text;
+  const set = SYMBOL_SETS[card.id.charCodeAt(0) % SYMBOL_SETS.length];
+  document.getElementById("tarotSymTop").textContent = set[0];
+  document.getElementById("tarotSymBot").textContent = set[1];
+
+  const q6 = state.answers[5];
+  let lines = card.reasons.map((r,i)=>({r,i}));
+  let topIdx = -1;
+  if(q6===0) topIdx = lines.findIndex(x=> x.r.includes("不想听"));
+  else if(q6===1) topIdx = lines.findIndex(x=> x.r.includes("太主动")||x.r.includes("没资格"));
+  else if(q6===2) topIdx = lines.findIndex(x=> x.r.includes("破坏")||x.r.includes("吓到"));
+  if(topIdx<0) topIdx = 0;
+  const ordered = [lines[topIdx], ...lines.filter((_,i)=>i!==topIdx)];
+  const rb = document.getElementById("tarotReasons"); rb.innerHTML = "";
+  ordered.forEach((item,idx)=>{
+    const div = document.createElement("div");
+    div.className = "reason-line" + (idx===0?" top":"");
+    div.innerHTML = '<span class="dot"></span><span>'+item.r+'</span>';
+    rb.appendChild(div);
+  });
+
+  // 幸运
+  const L = state.lucky || makeLucky(card.group);
+  document.getElementById("luckyColor").textContent = L.color;
+  document.getElementById("luckyNumber").textContent = L.number;
+  document.getElementById("luckyFood").textContent = L.food;
+  document.getElementById("luckyAcc").textContent = L.acc;
+  document.getElementById("avoidText").textContent = "避免：" + L.avoid;
+
+  // 回信标题带名字
+  document.getElementById("letterModuleTitle").textContent = state.name ? "你给"+state.name+"的回信" : "你想给他的回信";
+
+  const actionsBox = document.getElementById("actionsBox"); actionsBox.innerHTML = "";
+  card.actions.forEach(a=>{
+    const div = document.createElement("div"); div.className="action-line";
+    div.innerHTML = '<span class="dot"></span><span>'+a+'</span>';
+    actionsBox.appendChild(div);
+  });
+
+  const input = document.getElementById("letterInput");
+  input.value = state.letterDraft || "";
+  updateLetterCount();
+}
+function updateLetterCount(){
+  const input = document.getElementById("letterInput");
+  const meta = document.getElementById("letterMeta");
+  const len = input.value.length;
+  meta.textContent = len + "/200";
+  meta.classList.toggle("over", len>=200);
+  state.letterDraft = input.value; saveState();
+}
+
+/* 回信 */
+function genLetter(){
+  if(state.letterGenerated){
+    showModal("已经有一封了，要重写吗？", [
+      {label:"重写", solid:true, onClick:()=>{ doGenLetter(); }},
+      {label:"返回看看"}
+    ]);
+  }else doGenLetter();
+}
+function doGenLetter(){
+  state.letterText = document.getElementById("letterInput").value.trim();
+  state.letterDate = formatDate(new Date());
+  state.letterGenerated = true; saveState();
+  renderLetterPage(); showPage("letter");
+}
+function formatDate(d){ return d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0"); }
+function renderLetterPage(){
+  const card = getCard(state.resultCardId);
+  document.getElementById("letterContent").textContent = state.letterText || "";
+  document.getElementById("miniTarot").textContent = card ? card.name : "";
+  document.getElementById("miniInfo").innerHTML = card
+    ? '<div>'+card.name+'</div><div style="color:#b3a6cc">'+ (RARITY_LABEL[card.rarity]||card.rarity) +'</div>' + (state.name?'<div>写给 '+state.name+'</div>':'')
+    : "";
+  document.getElementById("letterDate").textContent = state.letterDate || formatDate(new Date());
+}
+function backToResult(){ showPage("result"); }
+
+/* 重新开始 */
+function askRestart(){
+  showModal("要重新开始吗？新一轮你与他的连接……", [
+    {label:"重来", solid:true, onClick:()=>{ clearState(); showPage("landing"); }},
+    {label:"取消"}
+  ]);
+}
+
+/* Canvas 保存 */
+function wrapText(ctx,text,maxWidth){
+  const lines=[]; let line="";
+  for(const ch of text){
+    if(ch==="\n"){ lines.push(line); line=""; continue; }
+    const test=line+ch;
+    if(ctx.measureText(test).width>maxWidth && line){ lines.push(line); line=ch; }
+    else line=test;
+  }
+  if(line) lines.push(line);
+  return lines;
+}
+function saveTarot(){
+  const card = getCard(state.resultCardId); if(!card) return;
+  const scale=2, W=340, H=Math.round(340*1.7);
+  const canvas=document.createElement("canvas"); canvas.width=W*scale; canvas.height=H*scale;
+  const ctx=canvas.getContext("2d"); ctx.scale(scale,scale);
+  const cw=W, ch=H;
+  ctx.fillStyle="#fff"; ctx.fillRect(0,0,cw,ch);
+  ctx.strokeStyle="#c9b8ea"; ctx.lineWidth=1.5; ctx.strokeRect(.75,.75,cw-1.5,ch-1.5);
+  ctx.fillStyle="rgba(201,184,234,.55)";
+  [[10,10],[cw-16,10],[10,ch-16],[cw-16,ch-16]].forEach(([x,y])=>ctx.fillRect(x,y,6,6));
+  ctx.fillStyle="#c9b8ea"; ctx.font="14px serif"; ctx.textAlign="center";
+  ctx.fillText("✦",cw/2,28); ctx.fillText("✧",cw/2,ch-18);
+  ctx.fillStyle="#5a4a7a"; ctx.font="22px 'Songti SC','Noto Serif CJK SC',serif"; ctx.fillText(card.name,cw/2,68);
+  ctx.fillStyle="#b3a6cc"; ctx.font="11px 'Songti SC','Noto Serif CJK SC',serif"; ctx.fillText(RARITY_LABEL[card.rarity]||card.rarity,cw/2,86);
+  ctx.strokeStyle="#e6def5"; ctx.beginPath(); ctx.moveTo(20,100); ctx.lineTo(cw-20,100); ctx.stroke();
+  const bodyW=cw-48; let fontSize=15; ctx.fillStyle="#4d3f6b"; let lines=[];
+  while(fontSize>=11){
+    ctx.font=fontSize+"px 'Songti SC','Noto Serif CJK SC',serif";
+    lines=wrapText(ctx,card.text,bodyW);
+    if(lines.length*fontSize*2.0<=330) break;
+    fontSize-=0.5;
+  }
+  let y=126; const lineH=fontSize*2.0;
+  lines.forEach(l=>{ ctx.fillText(l,cw/2,y); y+=lineH; });
+
+  const q6=state.answers[5]; let linesR=card.reasons.map((r,i)=>({r,i})); let topIdx=-1;
+  if(q6===0) topIdx=linesR.findIndex(x=>x.r.includes("不想听"));
+  else if(q6===1) topIdx=linesR.findIndex(x=>x.r.includes("太主动")||x.r.includes("没资格"));
+  else if(q6===2) topIdx=linesR.findIndex(x=>x.r.includes("破坏")||x.r.includes("吓到"));
+  if(topIdx<0) topIdx=0;
+  const ordered=[linesR[topIdx],...linesR.filter((_,i)=>i!==topIdx)];
+  const reasonTop=ch-110;
+  ctx.strokeStyle="#e6def5"; ctx.beginPath(); ctx.moveTo(20,reasonTop); ctx.lineTo(cw-20,reasonTop); ctx.stroke();
+  ctx.textAlign="left"; ctx.fillStyle="#b3a6cc"; ctx.font="11px 'Songti SC','Noto Serif CJK SC',serif";
+  ctx.fillText("他没说出口的可能",24,reasonTop+22);
+  let ry=reasonTop+42;
+  ordered.forEach((item,idx)=>{
+    ctx.fillStyle=idx===0?"#8d76b8":"#c9b8ea";
+    ctx.beginPath(); ctx.arc(26,ry-4,2.2,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=idx===0?"#4d3f6b":"#8d7fa8";
+    ctx.font=(idx===0?"600 ":"")+"13px 'Songti SC','Noto Serif CJK SC',serif";
+    ctx.fillText(item.r,34,ry); ry+=20;
+  });
+  ctx.textAlign="center"; ctx.fillStyle="#d8cdf0"; ctx.font="10px 'Songti SC','Noto Serif CJK SC',serif";
+  ctx.fillText("一粒沙尘制作",cw/2,ch-6);
+  const a=document.createElement("a"); a.download="未能宣之于口的_"+card.name+".png"; a.href=canvas.toDataURL("image/png"); a.click();
+}
+function saveLetter(){
+  const card=getCard(state.resultCardId);
+  const scale=2, W=360, H=560;
+  const canvas=document.createElement("canvas"); canvas.width=W*scale; canvas.height=H*scale;
+  const ctx=canvas.getContext("2d"); ctx.scale(scale,scale);
+  ctx.fillStyle="#fff"; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="#e6def5"; ctx.lineWidth=1; ctx.strokeRect(.5,.5,W-1,H-1);
+  const grad=ctx.createLinearGradient(0,0,W,0); grad.addColorStop(0,"#e6def5"); grad.addColorStop(.5,"#c9b8ea"); grad.addColorStop(1,"#e6def5");
+  ctx.fillStyle=grad; ctx.fillRect(0,0,W,3);
+  ctx.fillStyle="#4d3f6b"; ctx.font="15px 'Songti SC','Noto Serif CJK SC',serif"; ctx.textAlign="left";
+  const lines=wrapText(ctx,state.letterText||"",W-52); let y=48;
+  lines.forEach(l=>{ ctx.fillText(l,26,y); y+=30; });
+  const divY=Math.max(y+16,H-150);
+  ctx.strokeStyle="#f0eaf9"; ctx.beginPath(); ctx.moveTo(26,divY); ctx.lineTo(W-26,divY); ctx.stroke();
+  const miniX=26, miniY=divY+18, miniW=44, miniH=74;
+  ctx.fillStyle="#faf8ff"; ctx.fillRect(miniX,miniY,miniW,miniH);
+  ctx.strokeStyle="#d8cdf0"; ctx.strokeRect(miniX,miniY,miniW,miniH);
+  ctx.fillStyle="#b3a6cc"; ctx.font="10px 'Songti SC','Noto Serif CJK SC',serif"; ctx.textAlign="center";
+  const nameLines=wrapText(ctx,card?card.name:"",miniW-8); let ny=miniY+26;
+  nameLines.forEach(l=>{ ctx.fillText(l,miniX+miniW/2,ny); ny+=13; });
+  ctx.textAlign="left"; ctx.fillStyle="#8d7fa8"; ctx.font="12px 'Songti SC','Noto Serif CJK SC',serif";
+  ctx.fillText(card?card.name:"",miniX+miniW+12,miniY+18);
+  ctx.fillStyle="#b3a6cc"; ctx.font="11px 'Songti SC','Noto Serif CJK SC',serif";
+  ctx.fillText(card?(RARITY_LABEL[card.rarity]||card.rarity):"",miniX+miniW+12,miniY+38);
+  if(state.name){ ctx.fillText("写给 "+state.name, miniX+miniW+12, miniY+58); }
+  ctx.textAlign="right"; ctx.fillStyle="#b3a6cc"; ctx.font="12px 'Songti SC','Noto Serif CJK SC',serif";
+  ctx.fillText(state.letterDate||formatDate(new Date()),W-26,divY+100);
+  ctx.textAlign="center"; ctx.fillStyle="#d8cdf0"; ctx.font="10px 'Songti SC','Noto Serif CJK SC',serif";
+  ctx.fillText("一粒沙尘制作",W/2,H-14);
+  const a=document.createElement("a"); a.download="回信_"+formatDate(new Date())+".png"; a.href=canvas.toDataURL("image/png"); a.click();
+}
+
+/* 初始化 */
+function init(){
+  const saved = loadState();
+  if(saved && saved.answers && saved.answers.some(a=>a!==null)){
+    showModal("是否继续上次？", [
+      {label:"继续", solid:true, onClick:()=>{ resumeState(saved); }},
+      {label:"重来", onClick:()=>{ clearState(); showPage("landing"); }}
+    ]);
+    showPage("landing");
+  }else showPage("landing");
+}
+function resumeState(s){
+  state = s;
+  if(state.page==="result" && state.resultCardId){ renderResult(); showPage("result"); }
+  else if(state.page==="letter" && state.resultCardId){ renderResult(); renderLetterPage(); showPage("letter"); }
+  else if(state.page==="draw"){ showPage("draw"); resetDeck(); }
+  else if(state.page==="quiz"){ showPage("quiz"); renderQuestion(); }
+  else if(state.page==="name"){ showPage("name"); }
+  else showPage("landing");
+}
+init();
+</script>
+</body>
+</html>
